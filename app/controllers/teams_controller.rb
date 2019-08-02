@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_team, only: %i[show edit update destroy]
+  before_action :set_team, only: %i[show edit update destroy authority]
   before_action :authenticate_team_owner, only: %i[update]
 
 
@@ -43,6 +43,17 @@ class TeamsController < ApplicationController
   def destroy
     @team.destroy
     redirect_to teams_url, notice: 'チーム削除に成功しました！'
+  end
+
+  def authority
+    user_id = params[:user_id]
+    if @team.update(owner_id:user_id)
+      
+      redirect_to @team, notice: 'チームオーナーの権限移譲に成功しました！'
+    else
+      flash.now[:error] = 'チームオーナーの権限移譲に失敗しました、、'
+      render :edit
+    end
   end
 
   def dashboard
