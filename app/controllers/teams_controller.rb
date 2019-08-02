@@ -48,7 +48,7 @@ class TeamsController < ApplicationController
   def authority
     user_id = params[:user_id]
     if @team.update(owner_id:user_id)
-      
+      TeamMailer.team_mail(@team).deliver
       redirect_to @team, notice: 'チームオーナーの権限移譲に成功しました！'
     else
       flash.now[:error] = 'チームオーナーの権限移譲に失敗しました、、'
