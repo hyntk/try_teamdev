@@ -25,12 +25,12 @@ class AgendasController < ApplicationController
 
   def destroy
     @team = Team.find(@agenda.team_id)
-    @users = @team.users
+    @users = @team.members
     @agenda.destroy
-    AgendaMailer.agenda_mail(@users).deliver
-    # @users.each do |user|
-    #   AgendaMailer.agenda_mail(user).deliver
-    # end
+    # AgendaMailer.agenda_mail(@users).deliver
+    @users.each do |user|
+      AgendaMailer.agenda_mail(user).deliver
+    end
 
     redirect_to dashboard_url, notice: 'アジェンダ削除に成功しました！'
   end
@@ -53,7 +53,6 @@ class AgendasController < ApplicationController
     if @agenda.team_id != @current_user_team_id
       # redirect_to teams_url, notice: 'オーナー以外は編集できません、、'
       # flash.now[:error] = 'オーナー以外は編集できません、、'
-      binding.pry
       redirect_to @team,notice: 'オーナー以外は編集できません、、'
     end
   end
@@ -61,7 +60,6 @@ class AgendasController < ApplicationController
   def delete_authentication
     @team = Team.find(@agenda.team_id)
     if @team.owner != current_user && @agenda.user != current_user
-      binding.pry
       redirect_to dashboard_url, notice: 'アジェンダのオーナーかアジェンダ作成者のチームオーナーでないと削除できません、、'
     end
   end
